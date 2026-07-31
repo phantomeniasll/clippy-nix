@@ -119,6 +119,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   preFixup = ''
     gappsWrapperArgs+=(
+      # node-llama-cpp detects glibc by searching LD_LIBRARY_PATH. NixOS
+      # keeps both glibc and dynamically loaded graphics libraries in the
+      # Nix store rather than conventional /lib and /usr/lib directories.
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
+        stdenv.cc.libc
+        libglvnd
+      ]}"
       --add-flags "''${NIXOS_OZONE_WL:+''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
     )
   '';
