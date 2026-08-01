@@ -6,6 +6,7 @@
   makeWrapper,
   wrapGAppsHook3,
   autoPatchelfHook,
+  zip,
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -52,6 +53,7 @@ buildNpmPackage {
     autoPatchelfHook
     makeWrapper
     wrapGAppsHook3
+    zip
   ];
 
   buildInputs = [
@@ -62,11 +64,11 @@ buildNpmPackage {
   ];
 
   env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
-  env.ELECTRON_OVERRIDE_DIST_PATH = "${electron.unwrapped}/libexec/electron";
-
   preBuild = ''
-    rm -rf node_modules/electron/dist
-    ln -s ${electron.unwrapped}/libexec/electron node_modules/electron/dist
+    export ELECTRON_ZIP_DIR="$PWD/electron-dist"
+    mkdir -p "$ELECTRON_ZIP_DIR"
+    (cd ${electron.unwrapped}/libexec/electron && \
+      zip -qr "$ELECTRON_ZIP_DIR/electron-v${electron.version}-linux-x64.zip" .)
   '';
 
   npmBuildScript = "package";
