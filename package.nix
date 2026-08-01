@@ -77,6 +77,7 @@ buildNpmPackage {
 
   env = {
     ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+    ELECTRON_VERSION = electron.version;
     ELECTRON_ZIP_DIR = electronDist;
   };
 
