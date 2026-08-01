@@ -20,6 +20,7 @@
   libgbm,
   libglvnd,
   libpulseaudio,
+  libxslt,
   libx11,
   libxcb,
   libxcomposite,
@@ -58,7 +59,7 @@ buildNpmPackage {
 
   buildInputs = [
     alsa-lib at-spi2-atk at-spi2-core cairo cups dbus expat glib gtk3
-    libdrm libgbm libglvnd libpulseaudio libxkbcommon libxshmfence nspr nss
+    libdrm libgbm libglvnd libpulseaudio libxslt libxkbcommon libxshmfence nspr nss
     pango stdenv.cc.cc systemdLibs wayland libx11 libxcb libxcomposite
     libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxtst
   ];
@@ -88,6 +89,9 @@ buildNpmPackage {
     "libcudart.so.12"
     "libcublas.so.12"
     "libcublasLt.so.12"
+    "libcudart.so.13"
+    "libcublas.so.13"
+    "libcublasLt.so.13"
   ];
 
   preFixup = ''
