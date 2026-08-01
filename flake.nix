@@ -2,7 +2,7 @@
   description = "Nix package for Felix Rieseberg's Clippy desktop assistant";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.clippy-src.url = "git+file:../clippy-src";
+  inputs.clippy-src.url = "github:phantomeniasll/clippy";
   inputs.clippy-src.flake = false;
 
   outputs = { nixpkgs, clippy-src, ... }:

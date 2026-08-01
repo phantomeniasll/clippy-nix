@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "clippy-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785596494,
+        "narHash": "sha256-CO5OHEHvFRKEH8Yp8kSruKTyP7SyOW/sd3L8wwSJTws=",
+        "owner": "phantomeniasll",
+        "repo": "clippy",
+        "rev": "f8823f1028da57e1d085416668cbb2e455a494d5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "phantomeniasll",
+        "repo": "clippy",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785318670,
@@ -18,6 +34,7 @@
     },
     "root": {
       "inputs": {
+        "clippy-src": "clippy-src",
         "nixpkgs": "nixpkgs"
       }
     }
