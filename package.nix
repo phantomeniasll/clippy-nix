@@ -45,7 +45,7 @@ buildNpmPackage {
   version = "0.4.3-modern-llama";
 
   src = clippySrc;
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-gTnr2dSohMrOegb5QloOaESul2A2DcwNQwADkGnJxpo=";
   makeCacheWritable = true;
 
   nativeBuildInputs = [
