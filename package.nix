@@ -2,7 +2,7 @@
   lib,
   stdenv,
   buildNpmPackage,
-  electron,
+  electron-unwrapped,
   makeWrapper,
   wrapGAppsHook3,
   autoPatchelfHook,
@@ -65,7 +65,7 @@ buildNpmPackage {
 
   preBuild = ''
     rm -rf node_modules/electron/dist
-    ln -s ${electron}/lib/electron node_modules/electron/dist
+    ln -s ${electron-unwrapped}/libexec/electron node_modules/electron/dist
   '';
 
   npmBuildScript = "package";
