@@ -65,16 +65,20 @@ buildNpmPackage {
   ];
 
   env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
-  preBuild = ''
+  buildPhase = ''
+    runHook preBuild
+
     export ELECTRON_ZIP_DIR="$PWD/electron-dist"
     cp -r ${electron.unwrapped}/libexec/electron "$PWD/electron-template"
     chmod -R u+w "$PWD/electron-template"
     mkdir -p "$ELECTRON_ZIP_DIR"
     (cd "$PWD/electron-template" && \
       zip -0qr "$ELECTRON_ZIP_DIR/electron-v${electron.version}-linux-x64.zip" .)
-  '';
 
-  npmBuildScript = "package";
+    npm run package
+
+    runHook postBuild
+  '';
 
   installPhase = ''
     runHook preInstall
