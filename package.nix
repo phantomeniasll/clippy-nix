@@ -4,6 +4,7 @@
   buildNpmPackage,
   runCommand,
   electron,
+  llama-cpp,
   makeWrapper,
   wrapGAppsHook3,
   autoPatchelfHook,
@@ -44,6 +45,9 @@
 }:
 
 let
+  llamaCppVulkan = llama-cpp.override {
+    vulkanSupport = true;
+  };
   electronDist = runCommand "electron-${electron.version}-linux-x64-archive" {
     nativeBuildInputs = [ zip ];
   } ''
@@ -77,9 +81,13 @@ buildNpmPackage {
 
   env = {
     ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
-    ELECTRON_VERSION = electron.version;
     ELECTRON_ZIP_DIR = electronDist;
   };
+
+  preBuild = ''
+    substituteInPlace package.json \
+      --replace-fail '"electron": "41.10.3"' '"electron": "${electron.version}"'
+  '';
 
   npmBuildScript = "package";
 
@@ -104,6 +112,7 @@ buildNpmPackage {
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.libc libglvnd ]}"
+      --set CLIPPY_LLAMA_SERVER "${llamaCppVulkan}/bin/llama-server"
       --add-flags "''${NIXOS_OZONE_WL:+''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
     )
   '';
