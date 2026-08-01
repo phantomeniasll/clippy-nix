@@ -112,6 +112,7 @@ buildNpmPackage {
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.libc libglvnd ]}"
+      --set CHROME_DEVEL_SANDBOX "${electron}/libexec/electron/chrome-sandbox"
       --set CLIPPY_LLAMA_SERVER "${llamaCppVulkan}/bin/llama-server"
       --add-flags "''${NIXOS_OZONE_WL:+''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
     )
