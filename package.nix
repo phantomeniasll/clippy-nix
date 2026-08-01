@@ -114,7 +114,9 @@ buildNpmPackage {
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.libc libglvnd ]}"
       --set CHROME_DEVEL_SANDBOX "${electron}/libexec/electron/chrome-sandbox"
       --set CLIPPY_LLAMA_SERVER "${llamaCppVulkan}/bin/llama-server"
-      --add-flags "''${NIXOS_OZONE_WL:+''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
+      # KWin can enforce Electron's always-on-top hint through XWayland. The
+      # native Wayland protocol intentionally gives clients no keep-above API.
+      --add-flags "--ozone-platform=x11"
     )
   '';
 
