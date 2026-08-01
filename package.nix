@@ -62,6 +62,7 @@ buildNpmPackage {
   ];
 
   env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+  env.ELECTRON_OVERRIDE_DIST_PATH = "${electron.unwrapped}/libexec/electron";
 
   preBuild = ''
     rm -rf node_modules/electron/dist
