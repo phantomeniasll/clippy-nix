@@ -46,6 +46,7 @@ buildNpmPackage {
 
   src = clippySrc;
   npmDepsHash = "sha256-5IubAnRo6Pljq2dyV/aR7EfPNXPBgEGWZNJ3lRxXtJA=";
+  makeCacheWritable = true;
 
   nativeBuildInputs = [
     autoPatchelfHook
