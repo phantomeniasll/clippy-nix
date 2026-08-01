@@ -2,6 +2,7 @@
   lib,
   stdenv,
   buildNpmPackage,
+  runCommand,
   electron,
   makeWrapper,
   wrapGAppsHook3,
@@ -42,6 +43,17 @@
   clippySrc,
 }:
 
+let
+  electronDist = runCommand "electron-${electron.version}-linux-x64-archive" {
+    nativeBuildInputs = [ zip ];
+  } ''
+    mkdir -p "$out" "$TMPDIR/electron-template"
+    cp -r ${electron.unwrapped}/libexec/electron/. "$TMPDIR/electron-template/"
+    chmod -R u+w "$TMPDIR/electron-template"
+    (cd "$TMPDIR/electron-template" && \
+      zip -0qr "$out/electron-v${electron.version}-linux-x64.zip" .)
+  '';
+in
 buildNpmPackage {
   pname = "clippy";
   version = "0.4.3-modern-llama";
@@ -54,7 +66,6 @@ buildNpmPackage {
     autoPatchelfHook
     makeWrapper
     wrapGAppsHook3
-    zip
   ];
 
   buildInputs = [
@@ -64,21 +75,12 @@ buildNpmPackage {
     libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxtst
   ];
 
-  env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
-  buildPhase = ''
-    runHook preBuild
+  env = {
+    ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+    ELECTRON_ZIP_DIR = electronDist;
+  };
 
-    export ELECTRON_ZIP_DIR="$PWD/electron-dist"
-    cp -r ${electron.unwrapped}/libexec/electron "$PWD/electron-template"
-    chmod -R u+w "$PWD/electron-template"
-    mkdir -p "$ELECTRON_ZIP_DIR"
-    (cd "$PWD/electron-template" && \
-      zip -0qr "$ELECTRON_ZIP_DIR/electron-v${electron.version}-linux-x64.zip" .)
-
-    npm run package
-
-    runHook postBuild
-  '';
+  npmBuildScript = "package";
 
   installPhase = ''
     runHook preInstall
