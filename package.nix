@@ -45,7 +45,7 @@ buildNpmPackage {
   version = "0.4.3-modern-llama";
 
   src = clippySrc;
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-5IubAnRo6Pljq2dyV/aR7EfPNXPBgEGWZNJ3lRxXtJA=";
 
   nativeBuildInputs = [
     autoPatchelfHook
