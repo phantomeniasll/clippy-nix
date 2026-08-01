@@ -134,7 +134,7 @@ buildNpmPackage {
 
   meta = {
     description = "Classic Clippy interface for running local LLMs";
-    homepage = "https://github.com/felixrieseberg/clippy";
+    homepage = "https://github.com/phantomeniasll/clippy";
     license = lib.licenses.mit;
     mainProgram = "clippy";
     platforms = [ "x86_64-linux" ];
