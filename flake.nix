@@ -2,8 +2,10 @@
   description = "Nix package for Felix Rieseberg's Clippy desktop assistant";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.clippy-src.url = "git+file:../clippy-src";
+  inputs.clippy-src.flake = false;
 
-  outputs = { nixpkgs, ... }:
+  outputs = { nixpkgs, clippy-src, ... }:
     let
       supportedSystems = [ "x86_64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
@@ -14,8 +16,8 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          clippy = pkgs.callPackage ./package.nix { };
-          default = pkgs.callPackage ./package.nix { };
+          clippy = pkgs.callPackage ./package.nix { clippySrc = clippy-src; };
+          default = pkgs.callPackage ./package.nix { clippySrc = clippy-src; };
         });
     };
 }
