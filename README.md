@@ -5,21 +5,25 @@ A reproducible Nix package for the
 fork of Felix Rieseberg's local Clippy assistant.
 
 This wrapper builds the Electron app from source and provides the modern
-Vulkan-enabled `llama-server` needed by the fork's Gemma 4 and Qwen3.6
+HIP/ROCm `llama-server` needed by the fork's Gemma 4, Qwen3.6, and Qwen3.8
 multi-token prediction (MTP) support.
+
+llama.cpp is pinned to build `b10450`, which includes Qwen3.8's hybrid DeltaNet
+architecture, reasoning controls, and embedded MTP support.
 
 ## What the Package Provides
 
 - Electron from the pinned nixpkgs input rather than a downloaded binary.
-- A Vulkan-enabled llama.cpp server exposed to Clippy through
+- A ROCm-enabled llama.cpp server exposed to Clippy through
   `CLIPPY_LLAMA_SERVER`.
 - The runtime libraries needed by Electron on NixOS.
 - XWayland launch flags so KWin can honor Clippy's helper-window,
   skip-taskbar, and always-on-top hints. Native Wayland intentionally does not
   expose an application-controlled keep-above protocol.
 
-The package currently supports `x86_64-linux` and expects a working Vulkan
-driver plus XWayland when always-on-top behavior is desired.
+The package currently supports `x86_64-linux` and targets the Radeon 860M
+(`gfx1152`) through ROCm 7.2's compatible `gfx1151` kernels. It expects a
+working AMDGPU/KFD driver plus XWayland when always-on-top behavior is desired.
 
 ## Run It
 
