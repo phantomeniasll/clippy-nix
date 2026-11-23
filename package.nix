@@ -3,6 +3,7 @@
   stdenv,
   buildNpmPackage,
   runCommand,
+  fetchFromGitHub,
   electron,
   llama-cpp,
   makeWrapper,
@@ -45,8 +46,24 @@
 }:
 
 let
-  llamaCppVulkan = llama-cpp.override {
-    vulkanSupport = true;
+  # Qwen3.8 landed after the llama.cpp revision in the pinned nixpkgs. Pin a
+  # known post-release build so its hybrid DeltaNet graph, reasoning template,
+  # and embedded MTP path stay in sync.
+  llamaCppRocm = (llama-cpp.override {
+    rocmSupport = true;
+    # ROCm 7.2's rocBLAS closure does not ship native gfx1152 kernels yet.
+    # Radeon 860M is RDNA 3.5-compatible with gfx1151, so compile that target
+    # and select it through HSA_OVERRIDE_GFX_VERSION at runtime.
+    rocmGpuTargets = [ "gfx1151" ];
+  }).overrideAttrs {
+    version = "10450";
+    src = fetchFromGitHub {
+      owner = "ggml-org";
+      repo = "llama.cpp";
+      tag = "b10450";
+      hash = "sha256-E7b9asZsVnPydxHsHliMK9qSxZ2KZG7kff445MCD3ZQ=";
+    };
+    npmDepsHash = "sha256-2Q7XhaLAArmviOLdQsNbYTfdyDE5pW9lR26cRHEVl9k=";
   };
   electronDist = runCommand "electron-${electron.version}-linux-x64-archive" {
     nativeBuildInputs = [ zip ];
@@ -62,7 +79,13 @@ buildNpmPackage {
   pname = "clippy";
   version = "0.4.3-modern-llama";
 
-  src = clippySrc;
+  # Isolate the source subtree so unrelated edits in a parent flake do not
+  # change this package's source identity or trigger another application build.
+  src = lib.cleanSourceWith {
+    src = clippySrc;
+    name = "clippy-src";
+    filter = lib.cleanSourceFilter;
+  };
   npmDepsHash = "sha256-gTnr2dSohMrOegb5QloOaESul2A2DcwNQwADkGnJxpo=";
   makeCacheWritable = true;
 
@@ -113,7 +136,10 @@ buildNpmPackage {
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ stdenv.cc.libc libglvnd ]}"
       --set CHROME_DEVEL_SANDBOX "${electron}/libexec/electron/chrome-sandbox"
-      --set CLIPPY_LLAMA_SERVER "${llamaCppVulkan}/bin/llama-server"
+      --set CLIPPY_LLAMA_SERVER "${llamaCppRocm}/bin/llama-server"
+      --set CLIPPY_LLAMA_BACKEND "rocm"
+      --set HSA_OVERRIDE_GFX_VERSION "11.5.1"
+      --set GGML_CUDA_ENABLE_UNIFIED_MEMORY "1"
       # KWin can enforce Electron's always-on-top hint through XWayland. The
       # native Wayland protocol intentionally gives clients no keep-above API.
       --add-flags "--ozone-platform=x11"
