@@ -79,7 +79,13 @@ buildNpmPackage {
   pname = "clippy";
   version = "0.4.3-modern-llama";
 
-  src = clippySrc;
+  # Isolate the source subtree so unrelated edits in a parent flake do not
+  # change this package's source identity or trigger another application build.
+  src = lib.cleanSourceWith {
+    src = clippySrc;
+    name = "clippy-src";
+    filter = lib.cleanSourceFilter;
+  };
   npmDepsHash = "sha256-gTnr2dSohMrOegb5QloOaESul2A2DcwNQwADkGnJxpo=";
   makeCacheWritable = true;
 
